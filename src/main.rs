@@ -1,23 +1,22 @@
 use rand::Rng;
 
-fn generate_random_number(min: i32, max: i32, old_value: Option<i32>) -> i32 {
-    let old_value = old_value.unwrap_or(max - 1);
+fn generate_random_number(min: i32, max: i32, old_values: &Vec<i32>) -> i32 {
     let mut new_random_number = rand::thread_rng().gen_range(min..max);
-    while old_value == new_random_number {
+    while old_values.contains(&new_random_number) {
         new_random_number = rand::thread_rng().gen_range(min..max);
     }
     return new_random_number;
 }
 
 fn square_root(input: i32) -> i32 {
-    let mut random_number = generate_random_number(1, input, None);
+    let mut old_values = vec![generate_random_number(1, input, &Vec::new())];
     let mut iteration = 0;
-    while (random_number * random_number) != input {
+    while (old_values.last().unwrap() * old_values.last().unwrap()) != input {
         iteration = iteration + 1;
-        println!("Iteration number: {} | Random number: {}", iteration, random_number);
-        random_number = generate_random_number(1, input, Some(random_number));
+        println!("Iteration number: {} | Random number: {}", iteration, old_values.last().unwrap());
+        old_values.push(generate_random_number(1, input, &old_values));
     }
-    return random_number
+    return *old_values.last().unwrap()
 }
 
 fn main() {
